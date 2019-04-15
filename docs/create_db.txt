@@ -1,0 +1,102 @@
+CREATE TABLE CLASS
+(
+  Time datetime NOT NULL,
+  CNumber INT NOT NULL,
+  Cost tinyint NOT NULL,
+  CType enum('Yoga', 'Spin', 'Aerobics', 'Combat') NOT NULL,
+  Discount_Cost tinyint NOT NULL,
+  PRIMARY KEY (CNumber)
+);
+
+CREATE TABLE ROOM
+(
+  Capacity tinyint NOT NULL,
+  RoomID tinyint NOT NULL,
+  PRIMARY KEY (RoomID)
+);
+
+CREATE TABLE TRAINER
+(
+  Name varchar(40) NOT NULL,
+  Address tinytext NOT NULL,
+  Email varchar(40) NOT NULL,
+  Phone varchar(12) NOT NULL,
+  TrainerID tinyint NOT NULL,
+  CNumber INT NOT NULL,
+  PRIMARY KEY (TrainerID),
+  FOREIGN KEY (CNumber) REFERENCES CLASS(CNumber)
+);
+
+CREATE TABLE IS_HELD_IN
+(
+  RoomID tinyint NOT NULL,
+  CNumber INT NOT NULL,
+  PRIMARY KEY (RoomID, CNumber),
+  FOREIGN KEY (RoomID) REFERENCES ROOM(RoomID),
+  FOREIGN KEY (CNumber) REFERENCES CLASS(CNumber)
+);
+
+CREATE TABLE ROOM_CType
+(
+  CType enum('Yoga', 'Spin', 'Aerobics', 'Combat') NOT NULL,
+  RoomID tinyint NOT NULL,
+  PRIMARY KEY (CType, RoomID),
+  FOREIGN KEY (RoomID) REFERENCES ROOM(RoomID)
+);
+
+CREATE TABLE TRAINER_Certification
+(
+  Certification enum('Yoga', 'Spin', 'Aerobics', 'Combat') NOT NULL,
+  TrainerID tinyint NOT NULL,
+  PRIMARY KEY (Certification, TrainerID),
+  FOREIGN KEY (TrainerID) REFERENCES TRAINER(TrainerID)
+);
+
+CREATE TABLE MEMBER
+(
+  Address tinytext NOT NULL,
+  Email varchar(40) NOT NULL,
+  Phone varchar(12) NOT NULL,
+  Name varchar(40) NOT NULL,
+  MemberID smallint NOT NULL,
+  TrainerID tinyint NOT NULL,
+  PRIMARY KEY (MemberID),
+  FOREIGN KEY (TrainerID) REFERENCES TRAINER(TrainerID)
+);
+
+CREATE TABLE CREDITS
+(
+  Units smallint NOT NULL,
+  ExpiryDate date NOT NULL,
+  TransactionID int NOT NULL,
+  MemberID smallint NOT NULL,
+  PRIMARY KEY (TransactionID, MemberID),
+  FOREIGN KEY (MemberID) REFERENCES MEMBER(MemberID)
+);
+
+CREATE TABLE ATTENDS
+(
+  MemberID smallint NOT NULL,
+  CNumber INT NOT NULL,
+  PRIMARY KEY (MemberID, CNumber),
+  FOREIGN KEY (MemberID) REFERENCES MEMBER(MemberID),
+  FOREIGN KEY (CNumber) REFERENCES CLASS(CNumber)
+);
+
+CREATE TABLE REQUIRES
+(
+  CNumber INT NOT NULL,
+  MemberID smallint NOT NULL,
+  TransactionID INT NOT NULL,
+  PRIMARY KEY (CNumber, MemberID, TransactionID),
+  FOREIGN KEY (CNumber) REFERENCES CLASS(CNumber),
+  FOREIGN KEY (MemberID, TransactionID) REFERENCES CREDITS(MemberID, TransactionID)
+);
+
+CREATE TABLE MEMBER_Waiver
+(
+  Waiver blob,
+  MemberID smallint NOT NULL,
+  PRIMARY KEY (Waiver, MemberID),
+  FOREIGN KEY (MemberID) REFERENCES MEMBER(MemberID)
+);
